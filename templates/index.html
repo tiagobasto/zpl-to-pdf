@@ -1,0 +1,519 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>ZPL para PDF - Conversor de Etiquetas</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --card-bg: #020617;
+        --accent: #38bdf8;
+        --accent-soft: rgba(56, 189, 248, 0.15);
+        --border: #1e293b;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --error: #f97373;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+          sans-serif;
+        background: radial-gradient(circle at top, #1f2937 0, #020617 45%);
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+      }
+
+      .card {
+        width: 100%;
+        max-width: 720px;
+        background: linear-gradient(145deg, #020617, #020617);
+        border-radius: 24px;
+        padding: 28px 28px 24px;
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        box-shadow:
+          0 24px 80px rgba(15, 23, 42, 0.85),
+          0 0 0 1px rgba(15, 23, 42, 0.9);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: -40%;
+        background: radial-gradient(
+          circle at top right,
+          rgba(56, 189, 248, 0.22),
+          transparent 55%
+        );
+        opacity: 0.7;
+        pointer-events: none;
+      }
+
+      .card-inner {
+        position: relative;
+        z-index: 1;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .title-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        letter-spacing: -0.02em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .badge {
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        border: 1px solid rgba(56, 189, 248, 0.35);
+      }
+
+      .subtitle {
+        margin: 0;
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      .chip {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.3);
+        color: var(--muted);
+        background: rgba(15, 23, 42, 0.8);
+      }
+
+      .logo-mark {
+        width: 40px;
+        height: 40px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 30% 10%, #e5e7eb, transparent 55%),
+          radial-gradient(circle at 80% 80%, #38bdf8, transparent 60%),
+          radial-gradient(circle at 10% 80%, #6366f1, transparent 55%);
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #020617;
+        box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8),
+          0 16px 40px rgba(15, 23, 42, 0.9);
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr);
+        gap: 16px;
+      }
+
+      .section {
+        padding: 14px 14px 12px;
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.28);
+        background: rgba(15, 23, 42, 0.88);
+        backdrop-filter: blur(18px);
+      }
+
+      .section-title {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: var(--muted);
+        margin: 0 0 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .section-title span.dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: var(--accent);
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 8px;
+      }
+
+      label {
+        font-size: 0.8rem;
+        color: var(--muted);
+        display: flex;
+        justify-content: space-between;
+        gap: 6px;
+      }
+
+      label span.helper {
+        font-weight: 400;
+        color: #6b7280;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      input[type="file"] {
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        background: rgba(15, 23, 42, 0.96);
+        color: var(--text);
+        font-size: 0.85rem;
+        padding: 7px 11px;
+        outline: none;
+        width: 100%;
+        transition:
+          border-color 0.15s ease,
+          box-shadow 0.15s ease,
+          background 0.15s ease;
+      }
+
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      input[type="file"]:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5);
+        background: rgba(15, 23, 42, 1);
+      }
+
+      input[type="file"] {
+        padding: 6px 10px;
+        cursor: pointer;
+      }
+
+      .hint {
+        font-size: 0.72rem;
+        color: #6b7280;
+      }
+
+      .inline-fields {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .messages {
+        margin-bottom: 8px;
+      }
+
+      .message {
+        font-size: 0.8rem;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        background: rgba(15, 23, 42, 0.9);
+      }
+
+      .message.error {
+        border-color: rgba(248, 113, 113, 0.8);
+        background: rgba(127, 29, 29, 0.6);
+        color: #fecaca;
+      }
+
+      .message.info {
+        border-color: rgba(56, 189, 248, 0.7);
+        background: rgba(15, 23, 42, 0.9);
+      }
+
+      .footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-top: 8px;
+      }
+
+      .secondary-text {
+        font-size: 0.75rem;
+        color: #6b7280;
+      }
+
+      .secondary-text strong {
+        color: var(--accent);
+        font-weight: 500;
+      }
+
+      button[type="submit"] {
+        border: none;
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        cursor: pointer;
+        color: #0b1120;
+        background: linear-gradient(135deg, #38bdf8, #6366f1);
+        box-shadow:
+          0 0 0 1px rgba(15, 23, 42, 0.9),
+          0 12px 30px rgba(37, 99, 235, 0.45);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+      }
+
+      button[type="submit"]:hover {
+        filter: brightness(1.05);
+        transform: translateY(-0.5px);
+      }
+
+      button[type="submit"]:active {
+        filter: brightness(0.98);
+        transform: translateY(0.5px);
+        box-shadow:
+          0 4px 12px rgba(15, 23, 42, 0.8),
+          0 0 0 1px rgba(15, 23, 42, 0.9);
+      }
+
+      button .icon {
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.9);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        color: var(--accent);
+      }
+
+      @media (max-width: 720px) {
+        .card {
+          padding: 20px 18px 18px;
+          border-radius: 18px;
+        }
+
+        .form-grid {
+          grid-template-columns: minmax(0, 1fr);
+        }
+
+        .header {
+          flex-direction: row;
+          align-items: center;
+        }
+
+        h1 {
+          font-size: 1.25rem;
+        }
+
+        .footer {
+          flex-direction: column-reverse;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <div class="card-inner">
+        <header class="header">
+          <div class="title-group">
+            <h1>
+              ZPL para PDF
+              <span class="badge">Etiquetas 2 colunas</span>
+            </h1>
+            <p class="subtitle">
+              Envie o arquivo ZPL, ajuste o tamanho e o deslocamento da segunda
+              coluna, e baixe o PDF pronto para impressão.
+            </p>
+            <div class="chip-row">
+              <span class="chip">Upload de arquivo .txt / .zpl</span>
+              <span class="chip">Layout 2 colunas padrão</span>
+              <span class="chip">Ajuste fino em centímetros</span>
+            </div>
+          </div>
+          <div class="logo-mark">ZP</div>
+        </header>
+
+        <form method="post" enctype="multipart/form-data">
+          <div class="messages">
+            {% with messages = get_flashed_messages(with_categories=true) %} {% if
+            messages %} {% for category, message in messages %}
+            <div
+              class="message {% if category == 'error' %}error{% else %}info{% endif %}"
+            >
+              {{ message }}
+            </div>
+            {% endfor %} {% else %}
+            <div class="message info">
+              Use o campo <strong>Deslocamento da 2ª coluna</strong> para alinhar
+              as etiquetas da direita, por exemplo:
+              <strong>-0,5</strong> cm (esquerda) ou <strong>+0,5</strong> cm
+              (direita).
+            </div>
+            {% endif %} {% endwith %}
+          </div>
+
+          <div class="form-grid">
+            <section class="section">
+              <h2 class="section-title">
+                <span class="dot"></span>
+                Arquivo ZPL
+              </h2>
+              <div class="field">
+                <label for="zpl_file">
+                  Selecionar arquivo
+                  <span class="helper">Ex.: Envio-...-Etiquetas-de-produtos.txt</span>
+                </label>
+                <input
+                  id="zpl_file"
+                  name="zpl_file"
+                  type="file"
+                  accept=".txt,.zpl"
+                  required
+                />
+                <div class="hint">
+                  O arquivo deve conter comandos ZPL (como ^XA, ^FO, ^BC, ^XZ).
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <h2 class="section-title">
+                <span class="dot"></span>
+                Tamanho da etiqueta
+              </h2>
+              <div class="inline-fields">
+                <div class="field">
+                  <label for="width_cm">
+                    Largura
+                    <span class="helper">cm</span>
+                  </label>
+                  <input
+                    id="width_cm"
+                    name="width_cm"
+                    type="text"
+                    inputmode="decimal"
+                    value="{{ default_width }}"
+                  />
+                  <div class="hint">Padrão: 10 (≈ 4 pol.)</div>
+                </div>
+                <div class="field">
+                  <label for="height_cm">
+                    Altura
+                    <span class="helper">cm</span>
+                  </label>
+                  <input
+                    id="height_cm"
+                    name="height_cm"
+                    type="text"
+                    inputmode="decimal"
+                    value="{{ default_height }}"
+                  />
+                  <div class="hint">Padrão: 15 (≈ 6 pol.)</div>
+                </div>
+              </div>
+
+              <div class="field" style="margin-top: 6px">
+                <label for="dpmm">
+                  Resolução
+                  <span class="helper">pontos por mm (dpmm)</span>
+                </label>
+                <input
+                  id="dpmm"
+                  name="dpmm"
+                  type="number"
+                  min="6"
+                  max="24"
+                  step="1"
+                  value="{{ default_dpmm }}"
+                />
+                <div class="hint">
+                  8 ≈ 203 dpi &middot; 12 ≈ 300 dpi
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <section class="section">
+            <h2 class="section-title">
+              <span class="dot"></span>
+              Ajuste da 2ª coluna
+            </h2>
+
+            <div class="field">
+              <label for="offset_cm">
+                Deslocamento horizontal
+                <span class="helper">centímetros (cm)</span>
+              </label>
+              <input
+                id="offset_cm"
+                name="offset_cm"
+                type="text"
+                inputmode="decimal"
+                value="{{ default_offset }}"
+                placeholder="Ex.: -0,5 para esquerda ou +0,5 para direita"
+              />
+              <div class="hint">
+                Valores positivos movem a <strong>2ª coluna para a direita</strong>,
+                negativos para a <strong>esquerda</strong>. Apenas a coluna da
+                direita é alterada (X &gt; metade da largura da etiqueta).
+              </div>
+            </div>
+          </section>
+
+          <div class="footer">
+            <p class="secondary-text">
+              O PDF gerado terá
+              <strong>uma etiqueta por página</strong>, mantendo o layout padrão de
+              duas colunas por linha do arquivo ZPL.
+            </p>
+            <button type="submit">
+              <span class="icon">⮟</span>
+              Gerar PDF
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </body>
+</html>
+
