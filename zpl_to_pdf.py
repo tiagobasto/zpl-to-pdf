@@ -1,7 +1,8 @@
 import argparse
-from pathlib import Path
 import io
 import re
+import time
+from pathlib import Path
 
 import requests
 from pypdf import PdfWriter
@@ -30,6 +31,7 @@ def _labelary_request(
 ) -> bytes:
     """
     Envia um único bloco de ZPL para a API do Labelary e retorna um PDF.
+    Faz retry com backoff exponencial quando recebe HTTP 429 (rate limit).
     """
     width_str = _format_dimension(width_in)
     height_str = _format_dimension(height_in)
@@ -44,14 +46,34 @@ def _labelary_request(
         "Accept": "application/pdf",
     }
 
-    response = requests.post(url, headers=headers, data=zpl_chunk, timeout=30)
+    max_retries = 5
+    base_delay = 2.0
 
-    if response.status_code != 200:
-        raise RuntimeError(
-            f"Falha ao converter ZPL em PDF (HTTP {response.status_code}): {response.text}"
-        )
+    for attempt in range(max_retries):
+        response = requests.post(url, headers=headers, data=zpl_chunk, timeout=60)
 
-    return response.content
+        if response.status_code == 200:
+            return response.content
+
+        if response.status_code == 429:
+            # Rate limit: aguarda e tenta novamente
+            retry_after = response.headers.get("Retry-After")
+            if retry_after and retry_after.isdigit():
+                wait = float(retry_after)
+            else:
+                wait = base_delay * (2 ** attempt)
+
+            if attempt < max_retries - 1:
+                time.sleep(wait)
+            else:
+                raise RuntimeError(
+                    f"Falha ao converter ZPL em PDF (HTTP 429): "
+                    f"Limite de requisições excedido. Tente novamente em alguns minutos."
+                )
+        else:
+            raise RuntimeError(
+                f"Falha ao converter ZPL em PDF (HTTP {response.status_code}): {response.text}"
+            )
 
 
 def _split_labels(zpl_text: str) -> list[str]:
@@ -110,6 +132,10 @@ def convert_zpl_to_pdf(
     writer = PdfWriter()
 
     for start in range(0, len(labels), 50):
+        if start > 0:
+            # Pausa entre lotes para evitar rate limit da API Labelary
+            time.sleep(1.5)
+
         batch = labels[start : start + 50]
         batch_text = "\n".join(batch) + "\n"
         batch_bytes = batch_text.encode("utf-8")
