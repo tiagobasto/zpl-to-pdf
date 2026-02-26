@@ -99,10 +99,10 @@ def index():
     if request.method == "GET":
         return render_template(
             "index.html",
-            default_width="10",
-            default_height="15",
+            default_width="8.3",
+            default_height="2.5",
             default_dpmm="8",
-            default_offset="0",
+            default_offset="0.3",
         )
 
     # POST
@@ -112,8 +112,8 @@ def index():
         return redirect(url_for("index"))
 
     try:
-        width_cm = float(request.form.get("width_cm", "10").replace(",", "."))
-        height_cm = float(request.form.get("height_cm", "15").replace(",", "."))
+        width_cm = float(request.form.get("width_cm", "8.3").replace(",", "."))
+        height_cm = float(request.form.get("height_cm", "2.5").replace(",", "."))
         dpmm = int(request.form.get("dpmm", "8"))
     except ValueError:
         flash("Parâmetros de tamanho ou resolução inválidos.", "error")

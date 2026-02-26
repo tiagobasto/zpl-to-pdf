@@ -6,17 +6,27 @@
       name="viewport"
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
-    <title>ZPL para PDF - Conversor de Etiquetas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <title>ZPL para PDF - BarraDoce | Conversor de Etiquetas</title>
     <style>
       :root {
-        --bg: #0f172a;
-        --card-bg: #020617;
-        --accent: #38bdf8;
-        --accent-soft: rgba(56, 189, 248, 0.15);
-        --border: #1e293b;
-        --text: #e5e7eb;
-        --muted: #9ca3af;
-        --error: #f97373;
+        --cream: #FDF8F3;
+        --cream-dark: #F5EDE4;
+        --chocolate: #5D4037;
+        --chocolate-light: #6B4423;
+        --gold: #C9A227;
+        --gold-soft: rgba(201, 162, 39, 0.15);
+        --caramel: #D4A574;
+        --text: #3E2723;
+        --text-muted: #6D4C41;
+        --border: #D7CCC8;
+        --white: #FFFFFF;
+        --error: #B71C1C;
       }
 
       * {
@@ -26,9 +36,8 @@
       body {
         margin: 0;
         min-height: 100vh;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-          sans-serif;
-        background: radial-gradient(circle at top, #1f2937 0, #020617 45%);
+        font-family: "Source Sans 3", system-ui, sans-serif;
+        background: linear-gradient(180deg, #FDF8F3 0%, #F5EDE4 50%, #EDE0D4 100%);
         color: var(--text);
         display: flex;
         align-items: center;
@@ -39,13 +48,13 @@
       .card {
         width: 100%;
         max-width: 720px;
-        background: linear-gradient(145deg, #020617, #020617);
-        border-radius: 24px;
-        padding: 28px 28px 24px;
-        border: 1px solid rgba(148, 163, 184, 0.12);
+        background: var(--white);
+        border-radius: 20px;
+        padding: 32px 32px 28px;
+        border: 1px solid var(--border);
         box-shadow:
-          0 24px 80px rgba(15, 23, 42, 0.85),
-          0 0 0 1px rgba(15, 23, 42, 0.9);
+          0 4px 24px rgba(93, 64, 55, 0.08),
+          0 1px 3px rgba(93, 64, 55, 0.06);
         position: relative;
         overflow: hidden;
       }
@@ -53,13 +62,11 @@
       .card::before {
         content: "";
         position: absolute;
-        inset: -40%;
-        background: radial-gradient(
-          circle at top right,
-          rgba(56, 189, 248, 0.22),
-          transparent 55%
-        );
-        opacity: 0.7;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--chocolate), var(--gold));
         pointer-events: none;
       }
 
@@ -82,10 +89,33 @@
         gap: 4px;
       }
 
+      .brand-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        color: inherit;
+        margin-bottom: 4px;
+      }
+
+      .brand-link:hover {
+        opacity: 0.85;
+      }
+
+      .brand-text {
+        font-family: "Playfair Display", Georgia, serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--chocolate);
+      }
+
       h1 {
         margin: 0;
         font-size: 1.5rem;
+        font-family: "Playfair Display", Georgia, serif;
+        font-weight: 600;
         letter-spacing: -0.02em;
+        color: var(--chocolate);
         display: flex;
         align-items: center;
         gap: 8px;
@@ -95,15 +125,16 @@
         font-size: 0.7rem;
         padding: 2px 8px;
         border-radius: 999px;
-        background: var(--accent-soft);
-        color: var(--accent);
-        border: 1px solid rgba(56, 189, 248, 0.35);
+        background: var(--gold-soft);
+        color: var(--chocolate-light);
+        border: 1px solid rgba(201, 162, 39, 0.4);
+        font-weight: 500;
       }
 
       .subtitle {
         margin: 0;
-        font-size: 0.85rem;
-        color: var(--muted);
+        font-size: 0.9rem;
+        color: var(--text-muted);
       }
 
       .chip-row {
@@ -117,27 +148,24 @@
         font-size: 0.7rem;
         padding: 3px 8px;
         border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.3);
-        color: var(--muted);
-        background: rgba(15, 23, 42, 0.8);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        background: var(--cream);
       }
 
       .logo-mark {
-        width: 40px;
-        height: 40px;
-        border-radius: 999px;
-        background: radial-gradient(circle at 30% 10%, #e5e7eb, transparent 55%),
-          radial-gradient(circle at 80% 80%, #38bdf8, transparent 60%),
-          radial-gradient(circle at 10% 80%, #6366f1, transparent 55%);
-        border: 1px solid rgba(148, 163, 184, 0.5);
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--chocolate), var(--chocolate-light));
         display: flex;
         align-items: center;
         justify-content: center;
+        font-family: "Playfair Display", Georgia, serif;
         font-weight: 700;
-        font-size: 0.9rem;
-        color: #020617;
-        box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.8),
-          0 16px 40px rgba(15, 23, 42, 0.9);
+        font-size: 1.1rem;
+        color: var(--cream);
+        box-shadow: 0 4px 12px rgba(93, 64, 55, 0.2);
       }
 
       form {
@@ -153,19 +181,18 @@
       }
 
       .section {
-        padding: 14px 14px 12px;
-        border-radius: 16px;
-        border: 1px solid rgba(148, 163, 184, 0.28);
-        background: rgba(15, 23, 42, 0.88);
-        backdrop-filter: blur(18px);
+        padding: 16px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: var(--cream);
       }
 
       .section-title {
         font-size: 0.8rem;
         text-transform: uppercase;
-        letter-spacing: 0.09em;
-        color: var(--muted);
-        margin: 0 0 8px;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+        margin: 0 0 10px;
         display: flex;
         align-items: center;
         gap: 6px;
@@ -175,7 +202,7 @@
         width: 6px;
         height: 6px;
         border-radius: 999px;
-        background: var(--accent);
+        background: var(--gold);
       }
 
       .field {
@@ -187,7 +214,7 @@
 
       label {
         font-size: 0.8rem;
-        color: var(--muted);
+        color: var(--text-muted);
         display: flex;
         justify-content: space-between;
         gap: 6px;
@@ -195,32 +222,29 @@
 
       label span.helper {
         font-weight: 400;
-        color: #6b7280;
+        color: var(--text-muted);
+        opacity: 0.9;
       }
 
       input[type="text"],
       input[type="number"],
       input[type="file"] {
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.5);
-        background: rgba(15, 23, 42, 0.96);
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--white);
         color: var(--text);
-        font-size: 0.85rem;
-        padding: 7px 11px;
+        font-size: 0.9rem;
+        padding: 8px 12px;
         outline: none;
         width: 100%;
-        transition:
-          border-color 0.15s ease,
-          box-shadow 0.15s ease,
-          background 0.15s ease;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
       }
 
       input[type="text"]:focus,
       input[type="number"]:focus,
       input[type="file"]:focus {
-        border-color: var(--accent);
-        box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5);
-        background: rgba(15, 23, 42, 1);
+        border-color: var(--gold);
+        box-shadow: 0 0 0 2px var(--gold-soft);
       }
 
       input[type="file"] {
@@ -230,7 +254,7 @@
 
       .hint {
         font-size: 0.72rem;
-        color: #6b7280;
+        color: var(--text-muted);
       }
 
       .inline-fields {
@@ -244,22 +268,22 @@
       }
 
       .message {
-        font-size: 0.8rem;
-        padding: 6px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        background: rgba(15, 23, 42, 0.9);
+        font-size: 0.85rem;
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--cream);
       }
 
       .message.error {
-        border-color: rgba(248, 113, 113, 0.8);
-        background: rgba(127, 29, 29, 0.6);
-        color: #fecaca;
+        border-color: rgba(183, 28, 28, 0.4);
+        background: #FFEBEE;
+        color: var(--error);
       }
 
       .message.info {
-        border-color: rgba(56, 189, 248, 0.7);
-        background: rgba(15, 23, 42, 0.9);
+        border-color: rgba(201, 162, 39, 0.3);
+        background: var(--cream);
       }
 
       .footer {
@@ -271,58 +295,59 @@
       }
 
       .secondary-text {
-        font-size: 0.75rem;
-        color: #6b7280;
+        font-size: 0.8rem;
+        color: var(--text-muted);
       }
 
       .secondary-text strong {
-        color: var(--accent);
+        color: var(--chocolate);
+        font-weight: 600;
+      }
+
+      .footer-link {
+        color: var(--chocolate-light);
+        text-decoration: none;
         font-weight: 500;
+      }
+
+      .footer-link:hover {
+        text-decoration: underline;
       }
 
       button[type="submit"] {
         border: none;
-        border-radius: 999px;
-        padding: 9px 18px;
+        border-radius: 12px;
+        padding: 10px 22px;
         font-size: 0.9rem;
-        font-weight: 500;
-        letter-spacing: 0.03em;
-        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.02em;
         cursor: pointer;
-        color: #0b1120;
-        background: linear-gradient(135deg, #38bdf8, #6366f1);
-        box-shadow:
-          0 0 0 1px rgba(15, 23, 42, 0.9),
-          0 12px 30px rgba(37, 99, 235, 0.45);
+        color: var(--white);
+        background: linear-gradient(135deg, var(--chocolate), var(--chocolate-light));
+        box-shadow: 0 4px 14px rgba(93, 64, 55, 0.3);
         display: inline-flex;
         align-items: center;
         gap: 8px;
         white-space: nowrap;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
 
       button[type="submit"]:hover {
-        filter: brightness(1.05);
-        transform: translateY(-0.5px);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(93, 64, 55, 0.35);
       }
 
       button[type="submit"]:active {
-        filter: brightness(0.98);
-        transform: translateY(0.5px);
-        box-shadow:
-          0 4px 12px rgba(15, 23, 42, 0.8),
-          0 0 0 1px rgba(15, 23, 42, 0.9);
+        transform: translateY(0);
       }
 
       button .icon {
-        width: 16px;
-        height: 16px;
-        border-radius: 999px;
-        background: rgba(15, 23, 42, 0.9);
+        width: 18px;
+        height: 18px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.7rem;
-        color: var(--accent);
+        font-size: 0.9rem;
       }
 
       @media (max-width: 720px) {
@@ -356,6 +381,9 @@
       <div class="card-inner">
         <header class="header">
           <div class="title-group">
+            <a href="https://www.barradoce.com.br" target="_blank" rel="noopener" class="brand-link">
+              <span class="brand-text">BarraDoce</span>
+            </a>
             <h1>
               ZPL para PDF
               <span class="badge">Etiquetas 2 colunas</span>
@@ -370,7 +398,7 @@
               <span class="chip">Ajuste fino em centímetros</span>
             </div>
           </div>
-          <div class="logo-mark">ZP</div>
+          <div class="logo-mark">BD</div>
         </header>
 
         <form method="post" enctype="multipart/form-data">
@@ -434,7 +462,7 @@
                     inputmode="decimal"
                     value="{{ default_width }}"
                   />
-                  <div class="hint">Padrão: 10 (≈ 4 pol.)</div>
+                  <div class="hint">Padrão: 8,3 cm</div>
                 </div>
                 <div class="field">
                   <label for="height_cm">
@@ -448,7 +476,7 @@
                     inputmode="decimal"
                     value="{{ default_height }}"
                   />
-                  <div class="hint">Padrão: 15 (≈ 6 pol.)</div>
+                  <div class="hint">Padrão: 2,5 cm</div>
                 </div>
               </div>
 
@@ -490,7 +518,7 @@
                 type="text"
                 inputmode="decimal"
                 value="{{ default_offset }}"
-                placeholder="Ex.: -0,5 para esquerda ou +0,5 para direita"
+                placeholder="Padrão: 0,3 cm"
               />
               <div class="hint">
                 Valores positivos movem a <strong>2ª coluna para a direita</strong>,
@@ -505,6 +533,8 @@
               O PDF gerado terá
               <strong>uma etiqueta por página</strong>, mantendo o layout padrão de
               duas colunas por linha do arquivo ZPL.
+              <br />
+              <a href="https://www.barradoce.com.br" target="_blank" rel="noopener" class="footer-link">barradoce.com.br</a>
             </p>
             <button type="submit">
               <span class="icon">⮟</span>
